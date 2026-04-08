@@ -25,29 +25,38 @@ class TestBooksCollector:
     def test_set_book_genre_valid_genre_is_set(self):
         collector = BooksCollector()
         collector.add_new_book('Мы')
-        collector.set_book_genre('Мы', 'Роман-антиутопия')
-        assert collector.get_book_genre('Мы') == 'Роман-антиутопия'
+        collector.set_book_genre('Мы', 'Фантастика')
+        assert collector.get_book_genre('Мы') == 'Фантастика'
 
-    # Проверка метода set_book_genre: невалидный жанр не устанавливается 
+    # Проверка метода set_book_genre: невалидный жанр не устнавливается 
     def test_set_book_genre_invalid_genre_not_set(self):
         collector = BooksCollector()
         collector.add_new_book('Мы')
-        collector.set_book_genre('Мы', 'Роман-антиутопия')
+        collector.set_book_genre('Мы', 'Роман')
         assert collector.get_book_genre('Мы') == ''
 
-    # Проверка метода  get_book_genre: для несуществующей книги возвращается значение None
-    def test_get_book_genre_nonexistent_book_returns_none(self):
+    # Проверка метода get_book_genre: возвращает жанр книги по её названию
+    def test_get_book_genre_returns_correct_genre(self):
         collector = BooksCollector()
-        assert collector.get_book_genre('Знайка на Юпитере') is None
+        collector.add_new_book('Незнайка на луне')
+        collector.set_book_genre('Незнайка на луне', 'Мультфильмы')
+        assert collector.get_book_genre('Незнайка на луне') == 'Мультфильмы'
+
+    # Проверка метода get_books_genre: возвращает словарь с книгами и их жанрами
+    def test_get_books_genre_returns_books_dict(self):
+        collector = BooksCollector()
+        collector.add_new_book('Ревизор')
+        collector.set_book_genre('Ревизор', 'Комедии')
+        assert collector.get_books_genre() == {'Ревизор': 'Комедии'}
 
     # Проверка метода get_books_with_specific_genre: возвращает только книги нужного жанра
     def test_get_books_with_specific_genre_returns_correct_books(self):
         collector = BooksCollector()
         collector.add_new_book('Мы')
         collector.add_new_book('Вий')
-        collector.set_book_genre('Мы', 'Роман')
+        collector.set_book_genre('Мы', 'Фантастика')
         collector.set_book_genre('Вий', 'Ужасы')
-        assert collector.get_books_with_specific_genre('Роман-антиутопия') == ['Мы']
+        assert collector.get_books_with_specific_genre('Фантастика') == ['Мы']
 
     # Проверка метода get_books_for_children: книги с возрастным рейтингом не попадают в список
     @pytest.mark.parametrize('name,genre', [
@@ -90,7 +99,11 @@ class TestBooksCollector:
         collector.delete_book_from_favorites('Мастер и Маргарита')
         assert 'Мастер и Маргарита' not in collector.get_list_of_favorites_books()
 
-    # Проверка метода get_list_of_favorites_books: проверка списка, который по умолчанию пуст
-    def test_get_list_of_favorites_books_empty_by_defoult(self):
+    # Проверка метода get_list_of_favorites_books: возвращает список добавленных в избранное книг
+    def test_get_list_of_favorites_books_returns_added_books(self):
         collector = BooksCollector()
-        assert collector.get_list_of_favorites_books() == []
+        collector.add_new_book('Собачье сердце')
+        collector.add_new_book('Двенадцать стульев')
+        collector.add_book_in_favorites('Собачье сердце')
+        collector.add_book_in_favorites('Двенадцать стульев')
+        assert collector.get_list_of_favorites_books() == ['Собачье сердце', 'Двенадцать стульев']
